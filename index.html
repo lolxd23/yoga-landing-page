@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
@@ -33,7 +30,7 @@
         <li><a href="#">CONTACT US</a></li>
       </ul>
     </nav>
-
+ 
     <header>
       <div class="header__image">
         <img src="header.png" alt="header" />
@@ -47,7 +44,7 @@
           lifestyle with guided sessions made for everyone.
         </p>
         <div class="header__btn">
-          <button>BOOK NOW</button>
+          <div id="booking-root"></div>
         </div>
         <ul class="header__socials">
           <li>
@@ -62,9 +59,75 @@
         </ul>
       </div>
     </header>
-
+ 
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/scrollreveal"></script>
     <script src="script.js"></script>
-    <script type="text/babel" src="booking.jsx"></script>
+    <script type="text/babel">
+      const { useState } = React;
+ 
+      function BookingModal() {
+        const [isOpen, setIsOpen] = useState(false);
+        const [submitted, setSubmitted] = useState(false);
+        const [form, setForm] = useState({ name: "", email: "", classType: "", date: "" });
+ 
+        const handleChange = (e) => {
+          setForm({ ...form, [e.target.name]: e.target.value });
+        };
+ 
+        const handleSubmit = () => {
+          if (!form.name || !form.email || !form.classType || !form.date) return;
+          setSubmitted(true);
+        };
+ 
+        const handleClose = () => {
+          setIsOpen(false);
+          setSubmitted(false);
+          setForm({ name: "", email: "", classType: "", date: "" });
+        };
+ 
+        return (
+          <>
+            <button className="book-btn" onClick={() => setIsOpen(true)}>
+              BOOK NOW
+            </button>
+ 
+            {isOpen && (
+              <div className="modal-overlay">
+                <div className="modal">
+                  <button className="modal-close" onClick={handleClose}>✕</button>
+                  {submitted ? (
+                    <div className="modal-success">
+                      <h2>You're booked! 🎉</h2>
+                      <p>Thanks, {form.name}! We'll see you on {form.date}.</p>
+                      <button className="book-btn" onClick={handleClose}>Close</button>
+                    </div>
+                  ) : (
+                    <>
+                      <h2>Book a Class</h2>
+                      <input name="name" placeholder="Your Name" value={form.name} onChange={handleChange} />
+                      <input name="email" placeholder="Your Email" type="email" value={form.email} onChange={handleChange} />
+                      <select name="classType" value={form.classType} onChange={handleChange}>
+                        <option value="">Select a Class</option>
+                        <option value="Beginner Yoga">Beginner Yoga</option>
+                        <option value="Power Yoga">Power Yoga</option>
+                        <option value="Meditation">Meditation</option>
+                        <option value="Hot Yoga">Hot Yoga</option>
+                      </select>
+                      <input name="date" type="date" value={form.date} onChange={handleChange} />
+                      <button className="book-btn" onClick={handleSubmit}>Confirm Booking</button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+          </>
+        );
+      }
+ 
+      ReactDOM.createRoot(document.getElementById("booking-root")).render(<BookingModal />);
+    </script>
   </body>
 </html>
